@@ -12,11 +12,10 @@ public class KafkaSpoutBuilder {
 
         TridentKafkaConfig spoutConf = new TridentKafkaConfig(new ZkHosts("localhost:2181"), "test");
 
-        spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
+        StringScheme scheme = new CustomStringScheme("log-event");
+        spoutConf.scheme = new SchemeAsMultiScheme(scheme);
 
         OpaqueTridentKafkaSpout spout = new OpaqueTridentKafkaSpout(spoutConf);
-
-
         return spout;
     }
 }

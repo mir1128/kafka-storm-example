@@ -13,8 +13,8 @@ public class KafkaStormTopology {
 
     public static StormTopology buildTopology() {
         TridentTopology topology = new TridentTopology();
-        Stream kafkaStream = topology.newStream("str", KafkaSpoutBuilder.builder());
-        kafkaStream.each(new Fields("str"), new PrintAssignment());
+        Stream kafkaStream = topology.newStream("kafka-spout", KafkaSpoutBuilder.builder());
+        kafkaStream.each(new Fields("log-event"), new PrintAssignment());
         return topology.build();
     }
 
