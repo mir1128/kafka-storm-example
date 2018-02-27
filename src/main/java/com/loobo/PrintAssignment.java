@@ -9,7 +9,7 @@ import java.util.Map;
 public class PrintAssignment implements Filter {
     public boolean isKeep(TridentTuple tuple) {
 
-        System.out.println("[PrintAssignment] tuple is" + tuple);
+        System.out.println("[print assignment] tuple is" + tuple);
         return false;
     }
 

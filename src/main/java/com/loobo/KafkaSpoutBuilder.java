@@ -10,10 +10,12 @@ import org.apache.storm.tuple.Fields;
 public class KafkaSpoutBuilder {
     public static OpaqueTridentKafkaSpout builder() {
 
-        TridentKafkaConfig spoutConf = new TridentKafkaConfig(new ZkHosts("localhost:2181"), "test");
+        TridentKafkaConfig spoutConf = new TridentKafkaConfig(new ZkHosts("localhost:2181"), "continuous");
 
         StringScheme scheme = new CustomStringScheme("log-event");
         spoutConf.scheme = new SchemeAsMultiScheme(scheme);
+
+//        spoutConf.startOffsetTime = -1;
 
         OpaqueTridentKafkaSpout spout = new OpaqueTridentKafkaSpout(spoutConf);
         return spout;
