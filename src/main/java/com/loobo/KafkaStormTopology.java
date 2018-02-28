@@ -3,18 +3,14 @@ package com.loobo;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.generated.StormTopology;
-import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.trident.Stream;
 import org.apache.storm.trident.TridentTopology;
 import org.apache.storm.trident.testing.CountAsAggregator;
 import org.apache.storm.trident.windowing.InMemoryWindowsStoreFactory;
-import org.apache.storm.trident.windowing.WindowsStore;
 import org.apache.storm.trident.windowing.WindowsStoreFactory;
-import org.apache.storm.trident.windowing.config.SlidingCountWindow;
-import org.apache.storm.trident.windowing.config.SlidingDurationWindow;
-import org.apache.storm.trident.windowing.config.TumblingDurationWindow;
 import org.apache.storm.tuple.Fields;
+import org.apache.storm.windowing.CustomFieldSlidingWindow;
 
 public class KafkaStormTopology {
 
@@ -26,7 +22,9 @@ public class KafkaStormTopology {
 
         WindowsStoreFactory windowsStore = new InMemoryWindowsStoreFactory();
 
-        TumblingDurationWindow windowConfig = TumblingDurationWindow.of(BaseWindowedBolt.Duration.of(500));
+        CustomFieldSlidingWindow windowConfig = CustomFieldSlidingWindow.of(BaseWindowedBolt.Duration.of(20000),
+                        BaseWindowedBolt.Duration.of(500),
+                        1);
 
         kafkaStream.each(new Fields("log-event"), new JsonProjectFunction(jsonFields), jsonFields)
                 .window(windowConfig, windowsStore, jsonFields, new CountAsAggregator(), new Fields("count"))
@@ -38,8 +36,10 @@ public class KafkaStormTopology {
     public static void main(String[] args) throws InterruptedException {
         Config conf = new Config();
         LocalCluster cluster = new LocalCluster();
+        conf.put(Config.TOPOLOGY_TRIDENT_WINDOWING_INMEMORY_CACHE_LIMIT, 2000000);
+
         cluster.submitTopology("cdc", conf, buildTopology());
-        Thread.sleep(20000);
+        Thread.sleep(200000);
         cluster.shutdown();
     }
 }
